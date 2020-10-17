@@ -27,7 +27,7 @@ const products = [
     },
     {
       _id: '3',
-      name: 'Kenneth Cole Dress Shirt',
+      name: 'Dress Shirt',
       image: 'https://image.menswearhouse.com/is/image/TMW/MW40_55W2_01_AWEARNESS_KENNETH_COLE_WHITE_SET?$40MainPDP$',
       description:
         'Perfect for those dinners out, not so good for messy eaters.',
@@ -64,6 +64,6 @@ const products = [
         rating: 4.5,
         numReviews: 796,
       },
-  ]
-  
-  export default products;
+  ];
+
+  module.exports = products;
