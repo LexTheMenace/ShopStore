@@ -1,6 +1,5 @@
 const products = [
     {
-      _id: '1',
       name: 'Computer Glasses',
       image: 'https://images-na.ssl-images-amazon.com/images/I/61iVUN7Hx2L._AC_UL1500_.jpg',
       description:
@@ -13,7 +12,6 @@ const products = [
       numReviews: 7,
     },
     {
-      _id: '2',
       name: 'Wireless Keyboard and Mouse',
       image: 'https://store.hp.com/app/assets/images/product/LV290AA%23ABA/center_facing.png?_=1552333142043&imwidth=270&imdensity=1',
       description:
@@ -26,7 +24,6 @@ const products = [
       numReviews: 453,
     },
     {
-      _id: '3',
       name: 'Dress Shirt',
       image: 'https://image.menswearhouse.com/is/image/TMW/MW40_55W2_01_AWEARNESS_KENNETH_COLE_WHITE_SET?$40MainPDP$',
       description:
@@ -39,7 +36,6 @@ const products = [
       numReviews: 52,
     },
     {
-      _id: '4',
       name: 'HP OMEN Laptop',
       image: 'https://store.hp.com/app/assets/images/product/17H47AV_1/center_facing.png?_=1591174341996&amp;imwidth=430&amp;imdensity=1',
       description:
@@ -52,7 +48,6 @@ const products = [
       numReviews: 32,
     },
     {
-        _id: '5',
         name: 'Chair',
         image: 'https://www.staples-3p.com/s7/is/image/Staples/sp41816818_sc7',
         description:
