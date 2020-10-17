@@ -6,10 +6,12 @@ import Footer from './components/Footer';
 import './App.css';
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
+import { Provider } from './context' 
 
 const App = () => {
   return (
     <>
+    <Provider>
     <Router>
       <Header />
       <main className='py-3'>
@@ -23,6 +25,7 @@ const App = () => {
       </main>
       <Footer />
     </Router>
+    </Provider>
     </>
   );
 }
