@@ -1,66 +1,39 @@
 import React, { Component } from 'react'
 import axios from 'axios';
+import { reducer } from './reducer/reducer';
+import { CART_ADD_ITEM,
+    CART_REMOVE_ITEM,
+    PRODUCT_LIST_FAIL,
+    PRODUCT_LIST_REQUEST,
+    PRODUCT_LIST_SUCCESS,
+    PRODUCT_DETAILS_FAIL,
+    PRODUCT_DETAILS_REQUEST,
+    PRODUCT_DETAILS_SUCCESS,
+    USER_LOGIN_FAIL,
+    USER_LOGIN_REQUEST,
+    USER_LOGIN_SUCCESS,
+    USER_LOGOUT,
+    USER_REGISTER_FAIL,
+    USER_REGISTER_REQUEST,
+    USER_REGISTER_SUCCESS,
+} from './actions/constants';
+
 
 //Makes info available everywhere in the app
 export const Context = React.createContext();
 
-export const ACTIONS = {
-    PRODUCT_LIST_REQUEST: 'PRODUCT_LIST_REQUEST',
-    PRODUCT_LIST_SUCCESS: 'PRODUCT_LIST_SUCCESS',
-    PRODUCT_LIST_FAIL: 'PRODUCT_LIST_FAIL',
-    PRODUCT_DETAILS_REQUEST: 'PRODUCT_DETAILS_REQUEST',
-    PRODUCT_DETAILS_SUCCESS: 'PRODUCT_DETAILS_SUCCESS',
-    PRODUCT_DETAILS_FAIL: 'PRODUCT_DETAILS_FAIL',
-    CART_ADD_ITEM: 'CART_ADD_ITEM',
-    CART_REMOVE_ITEM: 'CART_REMOVE_ITEM'
-}
-export const reducer = (state, action) => {
-    switch (action.type) {
-        case PRODUCT_LIST_REQUEST:
-            return { loading: true, products: [] };
-        case PRODUCT_LIST_SUCCESS:
-            return { loading: false, products: action.payload };
-        case PRODUCT_LIST_FAIL:
-            return { loading: false, error: action.payload };
-        case PRODUCT_DETAILS_REQUEST:
-            return { loading: true, ...state }
-        case PRODUCT_DETAILS_SUCCESS:
-            return { loading: false, product: action.payload }
-        case PRODUCT_DETAILS_FAIL:
-            return { loading: false, error: action.payload }
-        case CART_ADD_ITEM:
-            const item = action.payload
-            const existItem = state.cartItems.find((x) => x.product === item.product)
-            if (existItem) {
-                return {
-                    ...state,
-                    cartItems: state.cartItems.map((x) =>
-                        x.product === existItem.product ? item : x
-                    ),
-                }
-            } else {
-                return {
-                    ...state,
-                    cartItems: [...state.cartItems, item],
-                }
-            }
-        case CART_REMOVE_ITEM:
-            return {
-                ...state,
-                cartItems: state.cartItems.filter((x) => x.product !== action.payload),
-            }
-        default:
-            return state;
-    };
-};
-const { CART_ADD_ITEM, CART_REMOVE_ITEM, PRODUCT_LIST_FAIL, PRODUCT_LIST_REQUEST, PRODUCT_LIST_SUCCESS, PRODUCT_DETAILS_FAIL, PRODUCT_DETAILS_REQUEST, PRODUCT_DETAILS_SUCCESS } = ACTIONS
-  
 const cartItemsFromStorage = localStorage.getItem('cartItems')
-  ? JSON.parse(localStorage.getItem('cartItems'))
-  : []
-  const initialState = {
+    ? JSON.parse(localStorage.getItem('cartItems'))
+    : []
+
+const userInfoFromStorage = localStorage.getItem('userInfo')
+    ? JSON.parse(localStorage.getItem('userInfo'))
+    : null
+
+const initialState = {
     cart: { cartItems: cartItemsFromStorage },
-  }
+    userLogin: { userInfo: userInfoFromStorage },
+}
 
 export class Provider extends Component {
     state = {
@@ -69,11 +42,10 @@ export class Provider extends Component {
         error: '',
         product: {},
         cartItems: cartItemsFromStorage,
+        userInfo: userInfoFromStorage,
         dispatch: action => this.setState(state => reducer(state, action)),
 
     };
-
-  
 
     listProducts = async () => {
         const { dispatch } = this.state
@@ -144,7 +116,93 @@ export class Provider extends Component {
         })
 
         localStorage.setItem('cartItems', JSON.stringify(this.state.cartItems))
-    }
+    };
+
+    login = async (email, password) => {
+        const { dispatch } = this.state
+
+        try {
+          dispatch({
+            type: USER_LOGIN_REQUEST,
+          })
+      
+          const config = {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+      
+          const { data } = await axios.post(
+            '/api/v1/users/login',
+            { email, password },
+            config
+          )
+      
+          dispatch({
+            type: USER_LOGIN_SUCCESS,
+            payload: data,
+          })
+      
+          localStorage.setItem('userInfo', JSON.stringify(data))
+        } catch (error) {
+          dispatch({
+            type: USER_LOGIN_FAIL,
+            payload:
+              error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message,
+          })
+        }
+      };
+      logout = () => {
+        const { dispatch } = this.state
+    
+        localStorage.removeItem('userInfo')
+        dispatch({ type: USER_LOGOUT })
+    };
+
+    register = async (name, email, password) => {
+      const { dispatch } = this.state
+      
+        try {
+          dispatch({
+            type: USER_REGISTER_REQUEST,
+          })
+      
+          const config = {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+      
+          const { data } = await axios.post(
+            '/api/users',
+            { name, email, password },
+            config
+          )
+      
+          dispatch({
+            type: USER_REGISTER_SUCCESS,
+            payload: data,
+          })
+      
+          dispatch({
+            type: USER_LOGIN_SUCCESS,
+            payload: data,
+          })
+      
+          localStorage.setItem('userInfo', JSON.stringify(data))
+        } catch (error) {
+          dispatch({
+            type: USER_REGISTER_FAIL,
+            payload:
+              error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message,
+          })
+        }
+      };
+
     componentDidMount() {
         this.listProducts();
         console.log('mount');
@@ -159,7 +217,10 @@ export class Provider extends Component {
                     listProducts: this.listProducts,
                     listProductDetails: this.listProductDetails,
                     addToCart: this.addToCart,
-                    removeFromCart: this.removeFromCart
+                    removeFromCart: this.removeFromCart,
+                    login: this.login,
+                    logout: this.logout,
+                    register: this.register
                 }
             }}>
                 {this.props.children}
