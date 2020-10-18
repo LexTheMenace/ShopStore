@@ -7,6 +7,7 @@ import './App.css';
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
 import { Provider } from './context' 
+import CartScreen from './screens/CartScreen';
 
 const App = () => {
   return (
@@ -19,7 +20,7 @@ const App = () => {
           <Switch>
         <Route path='/' component={HomeScreen} exact />
         <Route path='/product/:id' component={ProductScreen}  />
-
+        <Route path='/cart/:id?' component={CartScreen} />
           </Switch>
         </Container>
       </main>
